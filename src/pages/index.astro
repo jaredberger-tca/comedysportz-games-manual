@@ -1,0 +1,311 @@
+---
+import games from '../data/games.json';
+import AppLayout from '../components/AppLayout.astro';
+import GameCard from '../components/GameCard.astro';
+
+const publishedGames = games.filter((game) => game.slug && game.title);
+const types = [...new Set(publishedGames.map((game) => game.type || game.group).filter(Boolean))];
+const categories = [...new Set(publishedGames.map((game) => game.category).filter(Boolean))];
+
+const searchableGames = [...publishedGames].sort((a, b) => a.title.localeCompare(b.title));
+---
+
+<AppLayout title="Home">
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">The Online ComedySportz Games Manual</p>
+      <h1>Find, browse, and teach ComedySportz games.</h1>
+      <p class="subtitle">
+        Search the official game library by title, manual page, category, type, alternate name, or description.
+      </p>
+
+      <div class="stats">
+        <span>{publishedGames.length} Games</span>
+        <span>{types.length} Types</span>
+        <span>{categories.length} Categories</span>
+      </div>
+    </section>
+
+    <section class="search-panel">
+      <h2>Find a Game</h2>
+
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Search by title, manual page, category, description..."
+        class="search-box"
+        autocomplete="off"
+      />
+
+      <div class="examples">
+        <span>Try:</span>
+        <button type="button" data-search-chip="New Choice">New Choice</button>
+        <button type="button" data-search-chip="Manual Page 167">Manual Page 167</button>
+        <button type="button" data-search-chip="Freeze">Freeze</button>
+        <button type="button" data-search-chip="Musical">Musical</button>
+      </div>
+
+      <div class="search-results">
+        <h3 id="resultsTitle">Start typing to find a game.</h3>
+
+        <div class="results-grid">
+          {searchableGames.map((game) => (
+            <div
+              class="search-item"
+              data-search={[
+                game.title,
+                game.alternateNames,
+                game.description,
+                game.refereeIntroduction,
+                game.specialNote,
+                game.variations,
+                game.category,
+                game.type,
+                game.group,
+                game.sourcePages,
+                game.sourcePages ? `manual page ${game.sourcePages}` : '',
+                game.sourcePages ? `page ${game.sourcePages}` : '',
+                game.sourcePages ? `p${game.sourcePages}` : ''
+              ]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase()}
+            >
+              <GameCard game={game} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="actions">
+      <a class="action-card" href="/browse-games/">
+        <strong>Browse Games</strong>
+        <span>Explore the full manual by type, category, or alphabetically.</span>
+      </a>
+
+      <a class="action-card" href="/browse-games/#browse-by-type">
+        <strong>Browse by Type</strong>
+        <span>Find Team Games, Head-To-Head Games, Audience Games, and more.</span>
+      </a>
+
+      <a class="action-card" href="/browse-games/#browse-by-category">
+        <strong>Browse by Category</strong>
+        <span>Find Scenic, Musical, Guessing, Last Chance, and other game categories.</span>
+      </a>
+    </section>
+
+    <section class="admin-note">
+      <h2>About This Manual</h2>
+      <p>
+        The Online ComedySportz Games Manual exists to help referees, players, instructors, and producers quickly find, learn, and teach ComedySportz games. It also ensures the official game library remains easy to maintain and continues to grow over time.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const input = document.getElementById("searchInput");
+    const title = document.getElementById("resultsTitle");
+    const cards = Array.from(document.querySelectorAll(".search-item"));
+
+    function updateSearch() {
+      const q = input.value.trim().toLowerCase();
+      let visible = 0;
+
+      cards.forEach((card) => {
+        const text = card.dataset.search || "";
+        const show = q !== "" && text.includes(q);
+
+        card.style.display = show ? "" : "none";
+
+        if (show) visible++;
+      });
+
+      if (q === "") {
+        title.textContent = "Start typing to find a game.";
+      } else if (visible === 1) {
+        title.textContent = "1 Game Found";
+      } else if (visible === 0) {
+        title.textContent = "No Games Found";
+      } else {
+        title.textContent = `${visible} Games Found`;
+      }
+    }
+
+    document.querySelectorAll("[data-search-chip]").forEach((button) => {
+      button.addEventListener("click", () => {
+        input.value = button.dataset.searchChip;
+        updateSearch();
+        input.focus();
+      });
+    });
+
+    updateSearch();
+    input.addEventListener("input", updateSearch);
+  </script>
+</AppLayout>
+
+<style>
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  .hero,
+  .search-panel,
+  .actions,
+  .admin-note {
+    background: white;
+    border: 1px solid #e4e4e7;
+    border-radius: 18px;
+    padding: 32px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  }
+
+  .eyebrow {
+    margin: 0 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    color: #71717a;
+    font-weight: 800;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    line-height: 1;
+  }
+
+  .subtitle {
+    margin: 18px 0 0;
+    color: #71717a;
+    font-size: 1.1rem;
+    max-width: 720px;
+  }
+
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .stats span {
+    display: inline-flex;
+    border-radius: 999px;
+    background: #e8efff;
+    color: #1e3a8a;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: 750;
+  }
+
+  .search-panel h2 {
+    margin-top: 0;
+  }
+
+  .search-box {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 12px;
+    padding: 18px 22px;
+    font-size: 1.2rem;
+    border-radius: 14px;
+    border: 2px solid #d4d4d8;
+    outline: none;
+  }
+
+  .search-box:focus {
+    border-color: #005bbb;
+  }
+
+  .examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 18px;
+    color: #71717a;
+  }
+
+  .examples button {
+    border: 1px solid #e4e4e7;
+    border-radius: 999px;
+    background: #fafafa;
+    padding: 8px 12px;
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+  }
+
+  .examples button:hover {
+    background: #f4f7ff;
+    border-color: #bfd0ff;
+    color: #005bbb;
+  }
+
+  .search-results {
+    margin-top: 28px;
+  }
+
+  .results-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .action-card {
+    display: block;
+    border: 1px solid #e4e4e7;
+    border-radius: 14px;
+    padding: 22px;
+    background: #fafafa;
+    color: #18181b;
+    text-decoration: none;
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      border-color 0.18s ease,
+      background 0.18s ease;
+  }
+
+  .action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    border-color: #bfd0ff;
+    background: #f4f7ff;
+  }
+
+  .action-card strong {
+    display: block;
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+  }
+
+  .action-card span {
+    color: #71717a;
+  }
+
+  .admin-note h2 {
+    margin-top: 0;
+  }
+
+  .admin-note p {
+    color: #71717a;
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 900px) {
+    .actions {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,226 @@
+---
+import games from '../data/games.json';
+import GameCard from '../components/GameCard.astro';
+import AppLayout from '../components/AppLayout.astro';
+import Hero from '../components/Hero.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+
+const searchableGames = [...games]
+  .filter((game) => game.slug && game.title)
+  .sort((a, b) => a.title.localeCompare(b.title));
+---
+
+<AppLayout title="Find a Game">
+  <main class="page">
+    <Breadcrumbs
+  items={[
+    { label: 'Home', href: '/' },
+    { label: 'Find a Game' },
+  ]}
+/>
+
+    <section class="hero">
+  <Hero
+    eyebrow="ComedySportz Games Manual"
+    title="Find a Game"
+    subtitle="Search by title, manual page, category, type, alternate name, or description."
+  />
+
+  <input
+    id="searchInput"
+    type="search"
+    placeholder="Search by title, manual page, category, description..."
+    class="search-box"
+    autocomplete="off"
+  />
+
+  <div class="examples">
+    <span>Try:</span>
+    <button type="button" data-search-chip="New Choice">New Choice</button>
+    <button type="button" data-search-chip="Manual Page 167">Manual Page 167</button>
+    <button type="button" data-search-chip="Freeze">Freeze</button>
+    <button type="button" data-search-chip="Musical">Musical</button>
+  </div>
+</section>
+
+    <section class="results">
+      <h2 id="resultsTitle">Start typing to find a game.</h2>
+
+      <div id="resultsGrid" class="results-grid">
+        {searchableGames.map((game) => (
+          <div
+            class="search-item"
+            data-search={[
+              game.title,
+              game.alternateNames,
+              game.description,
+              game.refereeIntroduction,
+              game.specialNote,
+              game.variations,
+              game.category,
+              game.type,
+              game.group,
+              game.sourcePages,
+              game.sourcePages ? `manual page ${game.sourcePages}` : '',
+              game.sourcePages ? `page ${game.sourcePages}` : '',
+              game.sourcePages ? `p${game.sourcePages}` : ''
+            ]
+              .filter(Boolean)
+              .join(' ')
+              .toLowerCase()}
+          >
+            <GameCard game={game} />
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const input = document.getElementById("searchInput");
+    const title = document.getElementById("resultsTitle");
+    const cards = Array.from(document.querySelectorAll(".search-item"));
+
+    function updateSearch() {
+      const q = input.value.trim().toLowerCase();
+      let visible = 0;
+
+      cards.forEach((card) => {
+        const text = card.dataset.search || "";
+        const show = q !== "" && text.includes(q);
+
+        card.style.display = show ? "" : "none";
+
+        if (show) visible++;
+      });
+
+      if (q === "") {
+        title.textContent = "Start typing to find a game.";
+      } else if (visible === 1) {
+        title.textContent = "1 Game Found";
+      } else if (visible === 0) {
+        title.textContent = "No Games Found";
+      } else {
+        title.textContent = `${visible} Games Found`;
+      }
+    }
+
+    document.querySelectorAll("[data-search-chip]").forEach((button) => {
+      button.addEventListener("click", () => {
+        input.value = button.dataset.searchChip;
+        updateSearch();
+        input.focus();
+      });
+    });
+
+    updateSearch();
+    input.addEventListener("input", updateSearch);
+  </script>
+</AppLayout>
+
+<style>
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: #f7f7f8;
+    color: #18181b;
+  }
+
+  .page {
+    max-width: 900px;
+    margin: auto;
+    padding: 40px 20px 80px;
+  }
+
+  .top-nav {
+    margin-bottom: 20px;
+  }
+
+  a {
+    color: #005bbb;
+    text-decoration: none;
+    font-weight: 650;
+  }
+
+  .hero,
+  .results {
+    background: white;
+    border: 1px solid #e4e4e7;
+    border-radius: 18px;
+    padding: 32px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  }
+
+  .eyebrow {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    color: #71717a;
+    font-weight: 800;
+  }
+
+  h1 {
+    margin: 8px 0 14px;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  .subtitle {
+    color: #71717a;
+    font-size: 1.1rem;
+  }
+
+  .search-box {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 24px;
+    padding: 18px 22px;
+    font-size: 1.2rem;
+    border-radius: 14px;
+    border: 2px solid #d4d4d8;
+    outline: none;
+  }
+
+  .search-box:focus {
+    border-color: #005bbb;
+  }
+
+  .examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 18px;
+  color: #71717a;
+}
+
+.examples button {
+  border: 1px solid #e4e4e7;
+  border-radius: 999px;
+  background: #fafafa;
+  padding: 8px 12px;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.examples button:hover {
+  background: #f4f7ff;
+  border-color: #bfd0ff;
+  color: #005bbb;
+}
+.examples {
+    margin-top: 18px;
+    color: #71717a;
+  }
+
+  .examples strong {
+    color: #18181b;
+  }
+
+  .results-grid {
+    display: grid;
+    gap: 12px;
+  }
+</style>

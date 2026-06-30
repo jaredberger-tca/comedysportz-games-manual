@@ -1,0 +1,41 @@
+---
+const { items = [] } = Astro.props;
+---
+
+<nav class="breadcrumbs" aria-label="Breadcrumbs">
+  {items.map((item, index) => (
+    <>
+      {index > 0 && <span class="separator">›</span>}
+
+      {item.href ? (
+        <a href={item.href}>{item.label}</a>
+      ) : (
+        <span>{item.label}</span>
+      )}
+    </>
+  ))}
+</nav>
+
+<style>
+  .breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: #71717a;
+    margin-bottom: 24px;
+  }
+
+  .breadcrumbs a {
+    color: #005bbb;
+    font-weight: 650;
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .separator {
+    color: #a1a1aa;
+  }
+</style>

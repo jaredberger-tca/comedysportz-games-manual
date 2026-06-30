@@ -1,0 +1,80 @@
+---
+title: Browse Games
+description: Choose how you'd like to explore the Online ComedySportz Games Manual.
+---
+
+import games from "../../data/games.json";
+
+export const sortedGames = [...games]
+  .filter((game) => game.slug && game.title)
+  .sort((a, b) => a.title.localeCompare(b.title));
+
+export const types = [
+  ...new Set(sortedGames.map((game) => game.type || game.group).filter(Boolean)),
+].sort();
+
+export const categories = [
+  ...new Set(sortedGames.map((game) => game.category).filter(Boolean)),
+].sort();
+
+# Browse Games
+
+Choose how you'd like to explore the Online ComedySportz Games Manual.
+
+---
+
+## Browse by Type
+
+Find games based on how they are played.
+
+{types.map((type) => (
+  <section>
+    <h3>
+      <a
+        href={`/types/${String(type)
+          .toLowerCase()
+          .replace(/[’']/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '')}/`}
+      >
+        {type}
+      </a>
+    </h3>
+  </section>
+))}
+
+---
+
+## Browse by Category
+
+Find games by style, skill, or teaching objective.
+
+{categories.map((category) => (
+  <section>
+    <h3>
+      <a
+        href={`/categories/${String(category)
+          .toLowerCase()
+          .replace(/[’']/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '')}/`}
+      >
+        {category}
+      </a>
+    </h3>
+  </section>
+))}
+
+---
+
+## All Games (A-Z)
+
+Browse every game alphabetically.
+
+<ul>
+  {sortedGames.map((game) => (
+    <li>
+      <a href={`/games/${game.slug}/`}>{game.title}</a>
+    </li>
+  ))}
+</ul>

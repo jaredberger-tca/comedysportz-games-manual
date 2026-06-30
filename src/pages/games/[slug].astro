@@ -1,0 +1,149 @@
+---
+import games from '../../data/games.json';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+
+const slugify = (value) =>
+  String(value || '')
+    .toLowerCase()
+    .replace(/[’']/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+const sortedGames = [...games]
+  .filter((game) => game.slug && game.title)
+  .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+
+export function getStaticPaths() {
+  return [...games]
+    .filter((game) => game.slug && game.title)
+    .sort((a, b) => Number(a.order || 0) - Number(b.order || 0))
+    .map((game) => ({
+      params: { slug: game.slug },
+      props: { game },
+    }));
+}
+
+const { game } = Astro.props;
+
+const gameType = game.type || game.group || '';
+const gameCategory = game.category || '';
+
+const currentIndex = sortedGames.findIndex((item) => item.slug === game.slug);
+const previousGame = currentIndex > 0 ? sortedGames[currentIndex - 1] : null;
+const nextGame = currentIndex < sortedGames.length - 1 ? sortedGames[currentIndex + 1] : null;
+
+const exactRelatedGames = sortedGames
+  .filter((item) => item.slug !== game.slug)
+  .filter((item) => (item.type || item.group) === gameType && item.category === gameCategory)
+  .slice(0, 6);
+
+const typeRelatedGames = sortedGames
+  .filter((item) => item.slug !== game.slug)
+  .filter((item) => (item.type || item.group) === gameType && item.category !== gameCategory)
+  .slice(0, 6);
+
+const variationItems = String(game.variations || '')
+  .replace(/[•●▪◦]/g, '\n')
+  .split(/\n+/)
+  .map(item =>
+    item
+      .trim()
+      .replace(/^[-*•●▪◦]\s*/, '')
+      .trim()
+  )
+  .filter(Boolean);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{game.title} | ComedySportz Games Manual</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+
+  <body>
+    <main class="page">
+      <Breadcrumbs
+  items={[
+    { label: 'Home', href: '/' },
+    { label: 'Browse', href: '/browse-games/' },
+    ...(gameType ? [{ label: gameType, href: `/types/${slugify(gameType)}/` }] : []),
+    ...(gameCategory ? [{ label: gameCategory, href: `/categories/${slugify(gameCategory)}/` }] : []),
+    { label: game.title },
+  ]}
+/>
+
+      <header class="hero">
+        <p class="eyebrow">ComedySportz Game</p>
+        <h1>{game.title}</h1>
+
+        <div class="badges">
+          {gameType && <a class="badge" href={`/types/${slugify(gameType)}/`}>Type: {gameType}</a>}
+          {gameCategory && <a class="badge" href={`/categories/${slugify(gameCategory)}/`}>Category: {gameCategory}</a>}
+          {game.sourcePages && <span class="badge">Manual Page {game.sourcePages}</span>}
+        </div>
+      </header>
+
+      {game.refereeIntroduction && <section><h2>Referee Introduction</h2><blockquote>{game.refereeIntroduction}</blockquote></section>}
+      {game.description && <section><h2>Description</h2><p>{game.description}</p></section>}
+      {game.specialNote && <section><h2>Special Note</h2><p>{game.specialNote}</p></section>}
+
+      {variationItems.length > 0 && (
+        <section>
+          <h2>Variations</h2>
+          <ul>
+            {variationItems.map((item) => <li>{item}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {game.alternateNames && <section><h2>Alternate Names</h2><p>{game.alternateNames}</p></section>}
+
+      <section>
+        <h2>Continue Exploring</h2>
+
+        {exactRelatedGames.length > 0 && (
+          <>
+            <h3>More {gameCategory} Games</h3>
+            <ul>
+              {exactRelatedGames.map((item) => <li><a href={`/games/${item.slug}/`}>{item.title}</a></li>)}
+            </ul>
+          </>
+        )}
+
+        {typeRelatedGames.length > 0 && (
+          <>
+            <h3>More {gameType}</h3>
+            <ul>
+              {typeRelatedGames.map((item) => <li><a href={`/games/${item.slug}/`}>{item.title}</a></li>)}
+            </ul>
+          </>
+        )}
+
+        <p><a href="/browse-games/">Browse the full Games Manual →</a></p>
+      </section>
+
+      <nav class="pagination">
+        <div>{previousGame && <a href={`/games/${previousGame.slug}/`}>← {previousGame.title}</a>}</div>
+        <div>{nextGame && <a href={`/games/${nextGame.slug}/`}>{nextGame.title} →</a>}</div>
+      </nav>
+    </main>
+  </body>
+</html>
+
+<style>
+  body { margin: 0; font-family: system-ui, sans-serif; background: #f7f7f8; color: #18181b; line-height: 1.65; }
+  .page { max-width: 920px; margin: 0 auto; padding: 32px 20px 56px; }
+  a { color: #005bbb; font-weight: 650; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .hero, section { background: white; border: 1px solid #e4e4e7; border-radius: 18px; padding: 28px; margin-bottom: 18px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); }
+  .eyebrow { margin: 0 0 8px; text-transform: uppercase; letter-spacing: .08em; font-size: .8rem; color: #71717a; font-weight: 800; }
+  h1 { margin: 0; font-size: clamp(2.2rem, 6vw, 4rem); line-height: 1; }
+  h2 { margin-top: 0; }
+  .badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .badge { border-radius: 999px; background: #eef2ff; color: #1e3a8a; padding: 7px 12px; font-size: .9rem; font-weight: 750; }
+  blockquote { margin: 0; padding-left: 18px; border-left: 3px solid #d4d4d8; font-size: 1.15rem; font-style: italic; }
+  .pagination { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+  .pagination div:last-child { text-align: right; }
+  .pagination a { display: block; background: white; border: 1px solid #e4e4e7; border-radius: 14px; padding: 18px; }
+</style>

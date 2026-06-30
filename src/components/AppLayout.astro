@@ -1,0 +1,39 @@
+---
+import AppNav from './AppNav.astro';
+
+const { title = 'ComedySportz Games Manual' } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{title} | ComedySportz Games Manual</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+
+  <body>
+    <AppNav />
+
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: #f7f7f8;
+    color: #18181b;
+    line-height: 1.6;
+  }
+
+  a {
+    color: #005bbb;
+    text-decoration: none;
+    font-weight: 650;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+</style>

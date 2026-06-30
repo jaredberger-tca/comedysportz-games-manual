@@ -1,0 +1,36 @@
+---
+title: New Choice
+description: ComedySportz game.
+---
+
+import games from "../../../data/games.json";
+
+export const game = games.find((g) => g.slug === 'new-choice');
+
+# {game.title}
+
+**Category:** {game.category}
+
+## Referee Introduction
+
+{game.refereeIntroduction}
+
+## Description
+
+{game.description}
+
+## Setup
+
+{game.setup || "Coming from the Games Manual..."}
+
+## How to Play
+
+{game.howToPlay || "Coming from the Games Manual..."}
+
+## Variations
+
+{game.variations || "Coming from the Games Manual..."}
+
+## Notes
+
+{game.notes || "Coming from the Games Manual..."}

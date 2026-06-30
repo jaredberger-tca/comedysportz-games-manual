@@ -1,0 +1,52 @@
+---
+import StatPills from './StatPills.astro';
+
+const {
+  eyebrow = '',
+  title,
+  subtitle = '',
+  stats = [],
+} = Astro.props;
+---
+
+<header class="hero">
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+
+  <h1>{title}</h1>
+
+  {stats.length > 0 && <StatPills items={stats} />}
+
+  {subtitle && <p class="subtitle">{subtitle}</p>}
+</header>
+
+<style>
+  .hero {
+    background: white;
+    border: 1px solid #e4e4e7;
+    border-radius: 18px;
+    padding: 32px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  }
+
+  .eyebrow {
+    margin: 0 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    color: #71717a;
+    font-weight: 800;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    line-height: 1;
+  }
+
+  .subtitle {
+    margin: 18px 0 0;
+    color: #71717a;
+    font-size: 1.05rem;
+  }
+</style>

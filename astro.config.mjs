@@ -6,19 +6,14 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'My Docs',
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+			title: 'ComedySportz Games Manual',
 			sidebar: [
 				{
-					label: 'Guides',
+					label: 'Games Manual',
 					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
+						{ label: 'Home', slug: '' },
+						{ label: 'Browse Games', slug: 'browse-games' },
 					],
-				},
-				{
-					label: 'Reference',
-					items: [{ autogenerate: { directory: 'reference' } }],
 				},
 			],
 		}),

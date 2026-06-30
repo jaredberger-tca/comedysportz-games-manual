@@ -1,0 +1,454 @@
+---
+import games from '../data/games.json';
+import { categories as categoryMeta } from '../data/categories';
+import AppLayout from '../components/AppLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import GameCard from '../components/GameCard.astro';
+
+const slugify = (value) =>
+  String(value || '')
+    .toLowerCase()
+    .replace(/[’']/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+const sortedGames = [...games]
+  .filter((game) => game.slug && game.title)
+  .sort((a, b) => a.title.localeCompare(b.title));
+
+const typeNames = [
+  ...new Set(sortedGames.map((game) => game.type || game.group).filter(Boolean)),
+].sort();
+
+const categoryNames = [
+  ...new Set(sortedGames.map((game) => game.category).filter(Boolean)),
+].sort();
+
+const getCategoryKey = (category) =>
+  String(category || '')
+    .replace('Head-To-Head Games', '')
+    .replace('Games', '')
+    .trim();
+
+const getCategoryInfo = (category) => {
+  const key = getCategoryKey(category);
+  return categoryMeta[key] || {
+    title: category,
+    icon: '',
+    description: 'Browse games in this category.',
+  };
+};
+
+const getCountForType = (type) =>
+  sortedGames.filter((game) => (game.type || game.group) === type).length;
+
+const getCountForCategory = (category) =>
+  sortedGames.filter((game) => game.category === category).length;
+---
+
+<AppLayout title="Browse Games">
+  <main class="page">
+    <Breadcrumbs
+      items={[
+        { label: 'Home', href: '/' },
+        { label: 'Browse' },
+      ]}
+    />
+
+    <section class="hero">
+      <p class="eyebrow">The Online ComedySportz Games Manual</p>
+      <h1>Browse Games</h1>
+      <p class="subtitle">
+        Choose how you'd like to explore the official ComedySportz game library.
+      </p>
+    </section>
+
+    <section class="search-panel">
+      <div class="section-heading">
+        <h2>Find a Game</h2>
+        <p>
+          Search by title, manual page, category, type, alternate name, or description.
+        </p>
+      </div>
+
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Search games..."
+          class="search-box"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="examples">
+        <span>Try:</span>
+        <button type="button" data-search-chip="New Choice">New Choice</button>
+        <button type="button" data-search-chip="167">167</button>
+        <button type="button" data-search-chip="Replay">Replay</button>
+        <button type="button" data-search-chip="Musical">Musical</button>
+        <button type="button" data-search-chip="Guessing">Guessing</button>
+      </div>
+
+      <div class="search-results">
+        <h3 id="resultsTitle">Search the Online ComedySportz Games Manual.</h3>
+        <p id="resultsHelp" class="results-help">
+          Search by game title, manual page, category, type, alternate name, or description.
+        </p>
+
+        <div class="results-grid">
+          {sortedGames.map((game) => (
+            <div
+              class="search-item"
+              data-search={[
+                game.title,
+                game.alternateNames,
+                game.description,
+                game.refereeIntroduction,
+                game.specialNote,
+                game.variations,
+                game.category,
+                game.type,
+                game.group,
+                game.sourcePages,
+                game.sourcePages ? `manual page ${game.sourcePages}` : '',
+                game.sourcePages ? `page ${game.sourcePages}` : '',
+                game.sourcePages ? `p${game.sourcePages}` : ''
+              ]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase()}
+            >
+              <GameCard game={game} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <div id="browseContent">
+      <section class="browse-section" id="browse-by-type">
+        <div class="section-heading">
+          <h2>Browse by Type</h2>
+          <p>
+            Choose games based on how they're played. Team Games involve everyone
+            working together, while Head-To-Head Games feature direct competition
+            between players or teams.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          {typeNames.map((type) => (
+            <a class="browse-card" href={`/types/${slugify(type)}/`}>
+              <strong>{type}</strong>
+              <span>{getCountForType(type)} Games</span>
+              <em>Explore {type} →</em>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section class="browse-section" id="browse-by-category">
+        <div class="section-heading">
+          <h2>Browse by Category</h2>
+          <p>
+            Choose games based on the skill or mechanic you want to showcase.
+            Categories organize games by their primary objective, such as Scenic,
+            Musical, Guessing, Replay, or Interrupt games.
+          </p>
+        </div>
+
+        <div class="card-grid">
+          {categoryNames.map((category) => {
+            const info = getCategoryInfo(category);
+
+            return (
+              <a class="browse-card" href={`/categories/${slugify(category)}/`}>
+                <strong>
+                  {info.icon && <span class="icon">{info.icon}</span>}
+                  {category}
+                </strong>
+                <p>{info.description}</p>
+                <span>{getCountForCategory(category)} Games</span>
+                <em>Explore {category} →</em>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+
+      <section class="browse-section" id="browse-alphabetically">
+        <div class="section-heading">
+          <h2>All Games (A-Z)</h2>
+          <p>Browse every game alphabetically.</p>
+        </div>
+
+        <div class="az-list">
+          {sortedGames.map((game) => (
+            <a href={`/games/${game.slug}/`}>{game.title}</a>
+          ))}
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const input = document.getElementById("searchInput");
+    const title = document.getElementById("resultsTitle");
+    const help = document.getElementById("resultsHelp");
+    const browseContent = document.getElementById("browseContent");
+    const cards = Array.from(document.querySelectorAll(".search-item"));
+
+    function updateSearch() {
+      const q = input.value.trim().toLowerCase();
+      let visible = 0;
+
+      cards.forEach((card) => {
+        const text = card.dataset.search || "";
+        const show = q !== "" && text.includes(q);
+
+        card.style.display = show ? "" : "none";
+
+        if (show) visible++;
+      });
+
+      browseContent.style.display = q === "" ? "" : "none";
+
+      if (q === "") {
+        title.textContent = "Search the Online ComedySportz Games Manual.";
+        help.textContent =
+          "Search by game title, manual page, category, type, alternate name, or description.";
+      } else if (visible === 1) {
+        title.textContent = "1 Game Found";
+        help.textContent = "";
+      } else if (visible === 0) {
+        title.textContent = "No Games Found";
+        help.textContent =
+          "Try searching by alternate name, manual page, category, or a shorter phrase.";
+      } else {
+        title.textContent = `${visible} Games Found`;
+        help.textContent = "";
+      }
+    }
+
+    document.querySelectorAll("[data-search-chip]").forEach((button) => {
+      button.addEventListener("click", () => {
+        input.value = button.dataset.searchChip;
+        updateSearch();
+        input.focus();
+      });
+    });
+
+    updateSearch();
+    input.addEventListener("input", updateSearch);
+  </script>
+</AppLayout>
+
+<style>
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  .hero,
+  .search-panel,
+  .browse-section {
+    background: white;
+    border: 1px solid #e4e4e7;
+    border-radius: 18px;
+    padding: 32px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  }
+
+  .eyebrow {
+    margin: 0 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    color: #71717a;
+    font-weight: 800;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    line-height: 1;
+  }
+
+  .subtitle,
+  .section-heading p,
+  .results-help {
+    color: #71717a;
+    font-size: 1.05rem;
+  }
+
+  .subtitle {
+    margin: 18px 0 0;
+    max-width: 720px;
+  }
+
+  .section-heading h2 {
+    margin: 0;
+    font-size: 2rem;
+  }
+
+  .section-heading p {
+    margin: 8px 0 22px;
+  }
+
+  .search-wrap {
+    position: relative;
+    margin-top: 6px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #71717a;
+    font-size: 1.4rem;
+    pointer-events: none;
+  }
+
+  .search-box {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px 22px 20px 52px;
+    font-size: 1.25rem;
+    border-radius: 16px;
+    border: 2px solid #d4d4d8;
+    background: #fafafa;
+    color: #18181b;
+    outline: none;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
+  }
+
+  .search-box:focus {
+    border-color: #005bbb;
+    background: white;
+  }
+
+  .examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 18px;
+    color: #71717a;
+  }
+
+  .examples button {
+    border: 1px solid #e4e4e7;
+    border-radius: 999px;
+    background: #fafafa;
+    padding: 8px 14px;
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+  }
+
+  .examples button:hover {
+    background: #f4f7ff;
+    border-color: #bfd0ff;
+    color: #005bbb;
+  }
+
+  .search-results {
+    margin-top: 30px;
+  }
+
+  .search-results h3 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+
+  .results-help {
+    margin: 8px 0 0;
+  }
+
+  .results-grid {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .browse-card {
+    display: block;
+    border: 1px solid #e4e4e7;
+    border-radius: 14px;
+    padding: 22px;
+    background: #fafafa;
+    color: #18181b;
+    text-decoration: none;
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      border-color 0.18s ease,
+      background 0.18s ease;
+  }
+
+  .browse-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    border-color: #bfd0ff;
+    background: #f4f7ff;
+  }
+
+  .browse-card strong {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+
+  .browse-card p {
+    color: #71717a;
+    margin: 0 0 14px;
+  }
+
+  .browse-card span {
+    display: block;
+    color: #71717a;
+    margin-bottom: 10px;
+  }
+
+  .browse-card em {
+    font-style: normal;
+    color: #005bbb;
+    font-weight: 750;
+  }
+
+  .icon {
+    display: inline;
+    margin-right: 8px;
+  }
+
+  .az-list {
+    columns: 3;
+  }
+
+  .az-list a {
+    display: block;
+    break-inside: avoid;
+    margin-bottom: 8px;
+  }
+
+  @media (max-width: 800px) {
+    .card-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .az-list {
+      columns: 1;
+    }
+  }
+</style>

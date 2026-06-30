@@ -1,0 +1,243 @@
+---
+import games from '../../data/games.json';
+import GameCard from '../../components/GameCard.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+export function getStaticPaths() {
+  const categories = [
+    ...new Set(
+      games
+        .map((game) => game.category)
+        .filter(Boolean)
+    ),
+  ];
+
+  return categories.map((category) => ({
+    params: {
+      slug: String(category)
+        .toLowerCase()
+        .replace(/[’']/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, ''),
+    },
+    props: { category },
+  }));
+}
+
+const { category } = Astro.props;
+
+const slugFor = (value) =>
+  String(value || '')
+    .toLowerCase()
+    .replace(/[’']/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+const gamesInCategory = [...games]
+  .filter((game) => game.category === category)
+  .filter((game) => game.slug && game.title);
+
+const grouped = {};
+
+gamesInCategory.forEach((game) => {
+  const type = game.type || game.group || 'Other';
+  if (!grouped[type]) grouped[type] = [];
+  grouped[type].push(game);
+});
+
+const types = Object.keys(grouped).sort();
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{category} | ComedySportz Games Manual</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+
+  <body>
+    <main class="page">
+      <Breadcrumbs
+  items={[
+    { label: 'Home', href: '/' },
+    { label: 'Browse', href: '/browse-games/' },
+    { label: category },
+  ]}
+/>
+
+      <header class="hero">
+        <p class="eyebrow">Browse by Category</p>
+        <h1>{category}</h1>
+
+        <div class="stats">
+          <span>{gamesInCategory.length} Games</span>
+          <span>{types.length} Types</span>
+        </div>
+
+        <p class="subtitle">
+          Browse every {category} game grouped by type.
+        </p>
+      </header>
+
+      {types.map((type) => (
+        <section class="group-section">
+          <a class="section-header" href={`/types/${slugFor(type)}/`}>
+            <div>
+              <h2>{type}</h2>
+              <p>{grouped[type].length} Games</p>
+            </div>
+          </a>
+
+          <div class="game-list">
+            {grouped[type]
+              .sort((a, b) => a.title.localeCompare(b.title))
+              .map((game) => (
+                <GameCard game={game} />
+              ))}
+          </div>
+        </section>
+      ))}
+
+      <section class="continue">
+        <h2>Continue Exploring</h2>
+        <div class="explore-links">
+          <a href="/browse-games/">Browse all games →</a>
+          <a href="/browse-games/#browse-by-group">Browse by type →</a>
+          <a href="/browse-games/#browse-alphabetically">Browse alphabetically →</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: #f7f7f8;
+    color: #18181b;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  a {
+    color: #005bbb;
+    text-decoration: none;
+    font-weight: 650;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+
+  .hero,
+  .group-section,
+  .continue {
+    background: white;
+    border: 1px solid #e4e4e7;
+    border-radius: 18px;
+    padding: 32px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  }
+
+  .eyebrow {
+    margin: 0 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    color: #71717a;
+    font-weight: 800;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    line-height: 1;
+  }
+
+  .subtitle {
+    margin: 18px 0 0;
+    color: #71717a;
+    font-size: 1.05rem;
+  }
+
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+  }
+
+  .stats span {
+    display: inline-flex;
+    border-radius: 999px;
+    background: #e8efff;
+    color: #1e3a8a;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: 750;
+  }
+
+  .section-header {
+    display: block;
+    border-bottom: 1px solid #e4e4e7;
+    padding-bottom: 18px;
+    margin-bottom: 20px;
+    color: #18181b;
+  }
+
+  .section-header:hover h2 {
+    color: #005bbb;
+  }
+
+  .section-header h2 {
+    margin: 0;
+    font-size: 1.75rem;
+  }
+
+  .section-header p {
+    margin: 6px 0 0;
+    color: #71717a;
+  }
+
+  .game-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+
+  .explore-links {
+    display: grid;
+    gap: 12px;
+  }
+
+  .explore-links a {
+    border: 1px solid #e4e4e7;
+    border-radius: 12px;
+    padding: 16px 18px;
+    background: #fafafa;
+    color: #18181b;
+  }
+
+  .explore-links a:hover {
+    background: #f4f7ff;
+    border-color: #bfd0ff;
+    color: #005bbb;
+  }
+
+  @media (max-width: 720px) {
+    .game-list {
+      grid-template-columns: 1fr;
+    }
+
+    .section-header h2 {
+      font-size: 1.35rem;
+    }
+  }
+</style>

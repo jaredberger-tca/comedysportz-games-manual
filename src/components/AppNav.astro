@@ -1,0 +1,54 @@
+<nav class="app-nav">
+  <a class="brand" href="/">ComedySportz Games Manual</a>
+
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="/browse-games/">Browse</a>
+    <a href="/search/">Find a Game</a>
+  </div>
+</nav>
+
+<style>
+  .app-nav {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 22px 20px 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: center;
+  }
+
+  .brand {
+    color: #18181b;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .links {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .links a {
+    color: #005bbb;
+    font-weight: 650;
+    text-decoration: none;
+  }
+
+  .links a:hover,
+  .brand:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 700px) {
+    .app-nav {
+      display: block;
+    }
+
+    .links {
+      margin-top: 12px;
+    }
+  }
+</style>
