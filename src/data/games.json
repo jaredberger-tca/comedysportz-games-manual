@@ -578,23 +578,6 @@
     "specialNote": ""
   },
   {
-    "id": "G0035",
-    "manualOrder": 35,
-    "title": "GROUNDHOG’S REPLAY",
-    "slug": "groundhogs-replay",
-    "type": "Team Games",
-    "group": "Team Games",
-    "category": "Replay Games",
-    "refereeIntroduction": "(Start of the game) “The players will play a setup scene, and I will be back to explain the rest in a moment.”\n(After getting the style suggestions) “Now the players will replay the scene, but one player’s character knows they have done the scene before.”",
-    "description": "The referee gets a suggestion for the game, and the players begin with a neutral scene. After the scene is done, the referee will choose a player to be the Groundhog, who relives the scene. The first replay is the first time they have lived through it, the second time is a number less than 50, and the final time is any number at all. These numbers are provided by the audience.",
-    "alternateNames": "",
-    "variations": "",
-    "sourcePages": "49",
-    "reviewStatus": "Auto-extracted - needs human spot check",
-    "publishStatus": "Not Started",
-    "specialNote": "Duplicate title flag: Yes"
-  },
-  {
     "id": "G0036",
     "manualOrder": 36,
     "title": "HIGHLANDER",
