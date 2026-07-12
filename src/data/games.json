@@ -3857,5 +3857,22 @@
     "reviewStatus": "Needs Review",
     "publishStatus": "Not Started",
     "specialNote": ""
+  },
+  {
+    "id": "G0229",
+    "manualOrder": 229,
+    "title": "ROXANNE",
+    "slug": "roxanne",
+    "type": "Team Games",
+    "group": "Team Games",
+    "category": "Justification Games",
+    "refereeIntroduction": "Players will perform a scene while the song, \"Roxanne\" performs in the background of the scene. Everytime Sting sings \"Roxanne\" the players must do a physical action and justify why they are doing that action. The song is not meant to be a part of the scene.",
+    "description": "",
+    "alternateNames": "",
+    "variations": "Can we played where each player gets a different action to act out.",
+    "sourcePages": "",
+    "reviewStatus": "Reviewed",
+    "publishStatus": "Not Started",
+    "specialNote": ""
   }
 ]
