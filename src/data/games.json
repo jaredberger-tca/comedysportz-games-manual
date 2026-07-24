@@ -2712,7 +2712,7 @@
     "category": "Catch-All Head-To-Head Games",
     "refereeIntroduction": "“The players will list items in a specific category, if they repeat or something not in the category they will have to put a hand up. Two hands up and they’re out.”",
     "description": "The players line up at the front of the stage, and the referee gets a suggestion of a category. The referee will point at one player who will begin listing items in that category, and when the referee points at another player they continue to list things in the category. If ever a player fails to list something in the category, repeats an item previously listed, or any other reason, the referee will instruct them to put a hand up. The referee will then get a new category, and repeat the process. Once a player has two hands up, they are out. This continues until only one player is left.",
-    "alternateNames": "Dirty Hand Randy; Left Hand Larry",
+    "alternateNames": "Dirty Hand Randy; Left Hand Larry; Category Die; Category Bye; Scattagories",
     "variations": "- May be played single elimination.",
     "sourcePages": "192",
     "reviewStatus": "Auto-extracted - needs human spot check",
@@ -4112,5 +4112,22 @@
     "reviewStatus": "Needs Review",
     "publishStatus": "Not Started",
     "specialNote": "Players should avoid using accents as stereotypes or caricatures of cultures or ethnicities."
+  },
+  {
+    "id": "G0244",
+    "manualOrder": 244,
+    "title": "Which Is Also A...",
+    "slug": "which-is-also-a",
+    "type": "Head-To-Head Games",
+    "group": "Head-To-Head Games",
+    "category": "Catch-All Head-To-Head Games",
+    "refereeIntroduction": "“The players will name items that belong to a category. At any time, I may ask, ‘Which is also a...?’ The player must use their previous answer to create a new category, and the game will continue from there.”",
+    "description": "The players line up at the front of the stage. The referee gets a broad category from the audience and points to players one at a time. Each player must quickly name an item that belongs in the current category. At any time, after a player gives an answer that could also belong to another category, the referee may ask, “Which is also a...?” The player must identify another meaningful category that includes their answer. That answer becomes the first example in the new category, and play immediately continues using the new category. For example, if the category is Cats and a player says “Jaguar,” the referee may ask, “Which is also a...?” The player might answer “Sports team,” changing the category to Sports Teams. A player is eliminated for hesitating, repeating an answer, giving an answer that does not fit the current category, or failing to provide a valid new category when prompted. Play continues until one player remains.",
+    "alternateNames": "Category Shift; Category Pivot",
+    "variations": "- Players may receive one warning before elimination. - The game may be played without elimination as a speed and association exercise. - The referee may allow the audience to shout “Which is also a...?” when they recognize a possible connection.",
+    "sourcePages": "",
+    "reviewStatus": "",
+    "publishStatus": "Not Started",
+    "specialNote": "New categories should be broad, recognizable groupings with multiple possible answers. Arbitrary descriptions such as “words with seven letters” should generally not be accepted. The referee should call for a category change when an answer offers a clear and entertaining connection or when the current category begins to lose momentum."
   }
 ]
